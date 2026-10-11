@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* The toggle must beat the OS setting in both directions. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-plane: var(--plane);
+  --color-surface: var(--surface-1);
+  --color-sunken: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-muted: var(--ink-muted);
+  --color-hairline: var(--border);
+  --color-grid: var(--grid);
+  --color-axis: var(--axis);
+  --color-corpus: var(--series-corpus);
+  --color-target: var(--series-target);
+  --color-growth: var(--series-growth);
+  --color-good: var(--good);
+  --color-warning: var(--warning);
+  --color-critical: var(--critical);
+}
+
+:root {
+  color-scheme: light;
+  --plane: #f9f9f7;
+  --surface-1: #fcfcfb;
+  --surface-2: #f2f1ed;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --ink-muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --series-corpus: #2a78d6;
+  --series-target: #eb6834;
+  --series-growth: #1baf7a;
+  --diverge-late: #e34948;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --critical: #d03b3b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --plane: #0d0d0d;
+    --surface-1: #1a1a19;
+    --surface-2: #232321;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --ink-muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.1);
+    --series-corpus: #3987e5;
+    --series-target: #d95926;
+    --series-growth: #199e70;
+    --diverge-late: #e66767;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane: #0d0d0d;
+  --surface-1: #1a1a19;
+  --surface-2: #232321;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --ink-muted: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255, 255, 255, 0.1);
+  --series-corpus: #3987e5;
+  --series-target: #d95926;
+  --series-growth: #199e70;
+  --diverge-late: #e66767;
+}
+
+html {
+  background: var(--plane);
+}
+
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Columns of figures must align; standalone hero numbers must not. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  accent-color: var(--series-corpus);
+}
+
+/* Recharts paints its own focus ring otherwise. */
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* One consistent focus ring, visible in both themes. */
+:where(button, [role="switch"], [role="radio"], summary, a):focus-visible {
+  outline: 2px solid var(--series-corpus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Recharts redraws on every keystroke; stop the marks flickering. */
+.recharts-surface {
+  overflow: visible;
+}
