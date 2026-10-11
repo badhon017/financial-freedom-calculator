@@ -82,10 +82,13 @@ export function GoalsCard({
                 <label className="flex flex-col gap-1">
                   <span className="text-[11px] text-ink-muted">At age</span>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     value={goal.atAge}
-                    min={inputs.currentAge}
-                    onChange={(event) => update(goal.id, { atAge: Number(event.target.value) })}
+                    onChange={(event) => {
+                      const digits = event.target.value.replace(/[^\d]/g, '').slice(0, 3)
+                      update(goal.id, { atAge: Number(digits || inputs.currentAge) })
+                    }}
                     className={fieldClass}
                   />
                 </label>

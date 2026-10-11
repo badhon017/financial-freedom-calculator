@@ -202,6 +202,7 @@ export function NumberField({
         <input
           id={id}
           type="number"
+          inputMode="decimal"
           className={inputClass + (suffix ? ' pr-9' : '')}
           value={Number.isFinite(value) ? value : 0}
           step={step}
@@ -219,6 +220,109 @@ export function NumberField({
         )}
       </div>
     </Field>
+  )
+}
+
+/**
+ * A number field you can actually use on a phone: 44px plus/minus targets, a
+ * numeric keypad on mobile, and no native spinners.
+ *
+ * Crucially it clamps on blur, not on every keystroke. Clamping as you type
+ * means clearing the field to enter "45" snaps it to the minimum first, and
+ * then fights every digit after that.
+ */
+export function StepperField({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  suffix,
+  hint,
+}: {
+  label: string
+  value: number
+  onChange: (value: number) => void
+  min: number
+  max: number
+  suffix?: string
+  hint?: string
+}) {
+  const id = useId()
+  const [draft, setDraft] = useState<string | null>(null)
+  const clamp = (next: number) => Math.min(max, Math.max(min, Math.round(next)))
+
+  const commit = (raw: string) => {
+    const parsed = Number(raw)
+    if (raw.trim() !== '' && Number.isFinite(parsed)) onChange(clamp(parsed))
+    setDraft(null)
+  }
+
+  const step = (delta: number) => {
+    setDraft(null)
+    onChange(clamp(value + delta))
+  }
+
+  const buttonClass =
+    'flex h-11 w-11 shrink-0 items-center justify-center text-lg leading-none text-ink-2 ' +
+    'transition hover:bg-sunken hover:text-ink disabled:pointer-events-none disabled:opacity-30'
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id} className="text-xs font-medium text-ink-2">
+        {label}
+      </label>
+      <div className="flex items-stretch overflow-hidden rounded-lg border border-hairline bg-sunken focus-within:border-corpus focus-within:ring-2 focus-within:ring-corpus/30">
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          disabled={value <= min}
+          aria-label={`Decrease ${label}`}
+          className={buttonClass + ' border-r border-hairline'}
+        >
+          −
+        </button>
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-1 px-1">
+          <input
+            id={id}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            aria-label={label}
+            value={draft ?? String(value)}
+            onFocus={(event) => {
+              setDraft(String(value))
+              event.target.select()
+            }}
+            onChange={(event) => setDraft(event.target.value.replace(/[^\d]/g, '').slice(0, 3))}
+            onBlur={(event) => commit(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') event.currentTarget.blur()
+              if (event.key === 'ArrowUp') {
+                event.preventDefault()
+                step(1)
+              }
+              if (event.key === 'ArrowDown') {
+                event.preventDefault()
+                step(-1)
+              }
+            }}
+            className="w-full min-w-0 bg-transparent py-2.5 text-center text-sm font-medium text-ink tnum outline-none"
+          />
+          {suffix && <span className="shrink-0 text-xs text-ink-muted">{suffix}</span>}
+        </div>
+        <button
+          type="button"
+          onClick={() => step(1)}
+          disabled={value >= max}
+          aria-label={`Increase ${label}`}
+          className={buttonClass + ' border-l border-hairline'}
+        >
+          +
+        </button>
+      </div>
+      {hint && <p className="text-xs text-ink-muted">{hint}</p>}
+    </div>
   )
 }
 

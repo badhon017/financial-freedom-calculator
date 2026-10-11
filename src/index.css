@@ -122,3 +122,25 @@ input[type="range"] {
 .recharts-surface {
   overflow: visible;
 }
+
+/* Native number spinners are a ~10px hit target on desktop and useless on
+   mobile. Every numeric field here has a better affordance. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Keep tap targets comfortable on touch screens. */
+@media (pointer: coarse) {
+  input,
+  select,
+  button {
+    min-height: 2.75rem;
+  }
+}
